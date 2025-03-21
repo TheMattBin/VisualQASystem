@@ -11,3 +11,10 @@ graph TD
   F --> G[JSON Response Parser]
   G --> H[Answer Display]
 ```
+
+## Front-end
+```
+npx create-next-app@latest nextjs-frontend
+cd nextjs-frontend
+npm run dev
+```
