@@ -18,3 +18,12 @@ npx create-next-app@latest nextjs-frontend
 cd nextjs-frontend
 npm run dev
 ```
+
+### GCP/AWS Storage
+```
+# .env.local
+GCP_PROJECT_ID=your-project-id
+GCS_BUCKET_NAME=your-bucket-name
+GCP_CLIENT_EMAIL=service-account-email
+GCP_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n..."
+```
