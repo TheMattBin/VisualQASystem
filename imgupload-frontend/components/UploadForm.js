@@ -8,6 +8,7 @@ export default function UploadForm() {
   const [question, setQuestion] = useState('');
   const [error, setError] = useState('');
   const [uploaded, setUploaded] = useState(false);
+  const [response, setResponse] = useState(null); // State for storing the response from the backend
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -47,12 +48,15 @@ export default function UploadForm() {
         const data = await response.json();
         setUploaded(true);
         setError('');
+        setResponse(data); // Store the response from the backend
       } else {
         const data = await response.json();
         setError(data.error || 'An error occurred during upload.');
+        setResponse(null);
       }
     } catch (err) {
       setError('An unexpected error occurred.');
+      setResponse(null);
     }
   };
 
@@ -99,6 +103,12 @@ export default function UploadForm() {
       </button>
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       {uploaded && <p className="text-green-500 text-sm mt-2">Question submitted successfully!</p>}
+      {response && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-lg border border-gray-300">
+          <h2 className="text-lg font-bold text-gray-800 mb-2">Response:</h2>
+          <pre className="text-sm text-gray-700 whitespace-pre-wrap">{JSON.stringify(response, null, 2)}</pre>
+        </div>
+      )}
     </form>
   );
 }
