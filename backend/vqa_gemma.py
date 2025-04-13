@@ -5,8 +5,8 @@ import os
 import uuid
 from PIL import Image
 from sqlalchemy import create_engine, Column, String, DateTime, Text
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
 from transformers import AutoProcessor, Gemma3ForConditionalGeneration
 import requests
 import torch
@@ -19,6 +19,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class QueryHistory(Base):
     __tablename__ = "query_history"
+    __table_args__ = {'extend_existing': True}  # Add this line
     id = Column(String(36), primary_key=True)
     image_path = Column(String(512))
     question = Column(Text)
