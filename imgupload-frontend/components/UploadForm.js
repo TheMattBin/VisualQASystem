@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import styles from './UploadForm.module.css'; // Correctly import the CSS module
 
 export default function UploadForm() {
   const [file, setFile] = useState(null);
@@ -61,52 +62,41 @@ export default function UploadForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={styles.form}>
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Upload Image
-        </label>
+        <label className={styles.label}>Upload Image</label>
         <input
           type="file"
           onChange={handleFileChange}
           accept="image/*"
-          className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={styles.input}
         />
       </div>
       {preview && (
-        <div className="mt-4">
-          <p className="text-sm text-gray-700 mb-2">Image Preview:</p>
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-auto rounded-lg border border-gray-300"
-          />
+        <div className={styles.previewContainer}>
+          <p className={styles.label}>Image Preview:</p>
+          <img src={preview} alt="Preview" className={styles.previewImage} />
         </div>
       )}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Your Question
-        </label>
+        <label className={styles.label}>Your Question</label>
         <input
           type="text"
           value={question}
           onChange={handleQuestionChange}
           placeholder="Enter your question"
-          className="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={styles.input}
         />
       </div>
-      <button
-        type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
+      <button type="submit" className={styles.button}>
         Upload and Ask
       </button>
-      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-      {uploaded && <p className="text-green-500 text-sm mt-2">Question submitted successfully!</p>}
+      {error && <p className={styles.error}>{error}</p>}
+      {uploaded && <p className={styles.success}>Question submitted successfully!</p>}
       {response && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-lg border border-gray-300">
-          <h2 className="text-lg font-bold text-gray-800 mb-2">Response:</h2>
-          <pre className="text-sm text-gray-700 whitespace-pre-wrap">{JSON.stringify(response, null, 2)}</pre>
+        <div className={styles.responseContainer}>
+          <h2 className={styles.responseTitle}>Response:</h2>
+          <pre className={styles.responseText}>{JSON.stringify(response, null, 2)}</pre>
         </div>
       )}
     </form>
