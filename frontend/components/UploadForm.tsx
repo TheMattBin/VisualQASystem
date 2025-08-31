@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from 'react';
-import styles from './UploadForm.module.css'; // Correctly import the CSS module
+import { useState, ChangeEvent, FormEvent } from 'react';
+import styles from './UploadForm.module.css';
+
+interface BackendResponse {
+  [key: string]: any;
+}
 
 export default function UploadForm() {
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null); // State for image preview
-  const [question, setQuestion] = useState('');
-  const [error, setError] = useState('');
-  const [uploaded, setUploaded] = useState(false);
-  const [response, setResponse] = useState(null); // State for storing the response from the backend
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [question, setQuestion] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [uploaded, setUploaded] = useState<boolean>(false);
+  const [response, setResponse] = useState<BackendResponse | null>(null);
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
-
-    // Generate a preview URL for the selected image
     if (selectedFile) {
       const previewUrl = URL.createObjectURL(selectedFile);
       setPreview(previewUrl);
@@ -24,32 +26,29 @@ export default function UploadForm() {
     }
   };
 
-  const handleQuestionChange = (e) => {
+  const handleQuestionChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!file || !question) {
       setError('Please select a file and enter a question.');
       return;
     }
-
     const formData = new FormData();
     formData.append('image', file);
     formData.append('question', question);
-
     try {
       const response = await fetch('http://localhost:8000/vqa', {
         method: 'POST',
         body: formData,
       });
-
       if (response.ok) {
         const data = await response.json();
         setUploaded(true);
         setError('');
-        setResponse(data); // Store the response from the backend
+        setResponse(data);
       } else {
         const data = await response.json();
         setError(data.error || 'An error occurred during upload.');
