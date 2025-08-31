@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Smart Visual Q&A System",
-  description: "A Visual Language Model (VLM) powered Question Answering system for Home Inventory Management.",
+  description: "A Visual Language Model (VLM) powered Question Answering system.",
 };
 
 export default function RootLayout({
