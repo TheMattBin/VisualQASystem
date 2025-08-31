@@ -1,4 +1,4 @@
-# Smart Visual Q&A System
+# Visual Q&A System
 
 >A Visual Language Model (VLM) powered Question Answering system with Gemma-3.
 
