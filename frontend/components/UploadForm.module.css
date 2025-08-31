@@ -1,40 +1,80 @@
+.dark .form {
+  background: transparent;
+}
+.dark .label {
+  color: #cbd5e1; /* Tailwind's gray-300 */
+}
+.dark .input {
+  color: #f7fafc; /* Tailwind's gray-50 */
+  background-color: #1a202c; /* Tailwind's gray-900 */
+  border: 1px solid #334155; /* Tailwind's gray-700 */
+}
+.dark .button {
+  background-color: #2563eb; /* Tailwind's blue-700 */
+  color: #f7fafc;
+}
+.dark .button:hover {
+  background-color: #1e40af; /* Tailwind's blue-900 */
+}
+.dark .previewImage {
+  border: 1px solid #334155; /* Tailwind's gray-700 */
+}
+.dark .responseContainer {
+  background-color: #1e293b; /* Tailwind's gray-800 */
+  border: 1px solid #334155; /* Tailwind's gray-700 */
+}
+.dark .responseTitle {
+  color: #f1f5f9; /* Tailwind's gray-100 */
+}
+.dark .responseText {
+  color: #cbd5e1; /* Tailwind's gray-300 */
+}
+
+/* Light mode styles (default) */
 .form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  padding: 1.5rem 1rem;
 }
 
 .label {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #4a5568; /* Tailwind's gray-700 */
+  color: #2d3748; /* Tailwind's gray-800 */
 }
 
 .input {
   width: 100%;
   font-size: 0.875rem;
   color: #1a202c; /* Tailwind's gray-900 */
-  border: 1px solid #d2d6dc; /* Tailwind's gray-300 */
+  border: 1px solid #cbd5e1; /* Tailwind's gray-300 */
   border-radius: 0.375rem;
   padding: 0.5rem;
   background-color: #f7fafc; /* Tailwind's gray-50 */
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input:focus {
   outline: none;
   border-color: #4299e1; /* Tailwind's blue-500 */
-  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5); /* Tailwind's blue-500 */
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2); /* Tailwind's blue-500 */
 }
 
 .button {
   width: 100%;
   background-color: #4299e1; /* Tailwind's blue-500 */
-  color: white;
+  color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 0.375rem;
   text-align: center;
   font-weight: 500;
   cursor: pointer;
+  border: none;
+  transition: background 0.2s;
 }
 
 .button:hover {
@@ -43,7 +83,7 @@
 
 .button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5); /* Tailwind's blue-500 */
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2); /* Tailwind's blue-500 */
 }
 
 .error {
@@ -63,15 +103,16 @@
 .previewImage {
   width: 100%;
   height: auto;
-  border: 1px solid #d2d6dc; /* Tailwind's gray-300 */
+  border: 1px solid #cbd5e1; /* Tailwind's gray-300 */
   border-radius: 0.375rem;
+  background: #f7fafc;
 }
 
 .responseContainer {
   margin-top: 1rem;
   padding: 1rem;
   background-color: #f7fafc; /* Tailwind's gray-100 */
-  border: 1px solid #d2d6dc; /* Tailwind's gray-300 */
+  border: 1px solid #cbd5e1; /* Tailwind's gray-300 */
   border-radius: 0.375rem;
 }
 
