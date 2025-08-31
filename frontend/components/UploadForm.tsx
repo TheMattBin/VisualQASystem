@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useState, ChangeEvent, FormEvent } from 'react';
 import styles from './UploadForm.module.css';
 
@@ -7,13 +8,16 @@ interface BackendResponse {
   [key: string]: any;
 }
 
-export default function UploadForm() {
+interface UploadFormProps {
+  onResponse: (response: BackendResponse | null) => void;
+}
+
+export default function UploadForm({ onResponse }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [question, setQuestion] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [uploaded, setUploaded] = useState<boolean>(false);
-  const [response, setResponse] = useState<BackendResponse | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -48,15 +52,15 @@ export default function UploadForm() {
         const data = await response.json();
         setUploaded(true);
         setError('');
-        setResponse(data);
+        onResponse(data);
       } else {
         const data = await response.json();
         setError(data.error || 'An error occurred during upload.');
-        setResponse(null);
+        onResponse(null);
       }
     } catch (err) {
       setError('An unexpected error occurred.');
-      setResponse(null);
+      onResponse(null);
     }
   };
 
@@ -92,12 +96,6 @@ export default function UploadForm() {
       </button>
       {error && <p className={styles.error}>{error}</p>}
       {uploaded && <p className={styles.success}>Question submitted successfully!</p>}
-      {response && (
-        <div className={styles.responseContainer}>
-          <h2 className={styles.responseTitle}>Response:</h2>
-          <pre className={styles.responseText}>{JSON.stringify(response, null, 2)}</pre>
-        </div>
-      )}
     </form>
   );
 }
