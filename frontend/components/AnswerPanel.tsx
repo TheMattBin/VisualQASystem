@@ -5,6 +5,9 @@ interface AnswerPanelProps {
 }
 
 export default function AnswerPanel({ response }: AnswerPanelProps) {
+  // Debug: log the response to the console
+  console.log('AnswerPanel response:', response);
+
   if (!response) {
     return (
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 shadow w-full">
@@ -29,8 +32,12 @@ export default function AnswerPanel({ response }: AnswerPanelProps) {
   return (
     <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 shadow w-full">
       <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">Answer</h2>
-      <div className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words">
+      <div className="text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words mb-2">
         {mainAnswer}
+      </div>
+      <div className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+        <strong>Raw response:</strong>
+        <pre>{JSON.stringify(response, null, 2)}</pre>
       </div>
     </div>
   );

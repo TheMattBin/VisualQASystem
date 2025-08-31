@@ -1,15 +1,18 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from pydantic import BaseModel
-from datetime import datetime
+# Standard library imports
 import os
 import uuid
+from datetime import datetime
+
 from PIL import Image
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+
 from sqlalchemy import create_engine, Column, String, DateTime, Text
 from sqlalchemy.orm import sessionmaker, declarative_base
-# from sqlalchemy.ext.declarative import declarative_base
-from transformers import AutoProcessor, Gemma3ForConditionalGeneration
-import requests
+
 import torch
+from transformers import AutoProcessor, Gemma3ForConditionalGeneration
 
 # Database Configuration
 DATABASE_URL = "sqlite:///./vqa.db"
@@ -33,9 +36,12 @@ Base.metadata.create_all(bind=engine)
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+load_dotenv()
+HF_TOKEN = os.environ.get("HUGGINGFACE_TOKEN")
+
 # Model Initialization
 model_id = "google/gemma-3-4b-it"
-model = Gemma3ForConditionalGeneration.from_pretrained(model_id, device_map="auto").eval()
+model = Gemma3ForConditionalGeneration.from_pretrained(model_id, device_map="auto", token=HF_TOKEN).eval()
 processor = AutoProcessor.from_pretrained(model_id)
 
 app = FastAPI()
@@ -46,25 +52,31 @@ class QARequest(BaseModel):
 
 @app.post("/vqa")
 async def process_vqa(
-    image: UploadFile = File(...),
+    image: UploadFile = File(None),
     question: str = Form(...),
     user_id: str = Form(...)
 ):
-    # Image Handling
-    if not image.content_type.startswith('image/'):
-        raise HTTPException(400, "Invalid image format")
-    
-    file_ext = os.path.splitext(image.filename)[1]
     file_id = str(uuid.uuid4())
-    save_path = f"{UPLOAD_DIR}/{file_id}{file_ext}"
-    
-    try:
-        with Image.open(image.file) as img:
-            img.convert("RGB").save(save_path)
-    except IOError:
-        raise HTTPException(400, "Invalid image file")
+    save_path = None
 
-    # Generate Answer with Gemma-3
+    # If image is provided, handle and save it
+    if image is not None:
+        if not image.content_type.startswith('image/'):
+            raise HTTPException(400, "Invalid image format")
+        file_ext = os.path.splitext(image.filename)[1]
+        save_path = f"{UPLOAD_DIR}/{file_id}{file_ext}"
+        try:
+            with Image.open(image.file) as img:
+                img.convert("RGB").save(save_path)
+        except IOError:
+            raise HTTPException(400, "Invalid image file")
+
+    # Build messages for model
+    user_content = []
+    if save_path:
+        user_content.append({"type": "image", "image": save_path})
+    user_content.append({"type": "text", "text": question})
+
     messages = [
         {
             "role": "system",
@@ -72,10 +84,7 @@ async def process_vqa(
         },
         {
             "role": "user",
-            "content": [
-                {"type": "image", "image": save_path},
-                {"type": "text", "text": question}
-            ]
+            "content": user_content
         }
     ]
 
@@ -95,7 +104,7 @@ async def process_vqa(
     # Database Storage
     db_record = QueryHistory(
         id=file_id,
-        image_path=save_path,
+        image_path=save_path if save_path else "",
         question=question,
         answer=decoded,
         timestamp=datetime.now(),
@@ -107,3 +116,4 @@ async def process_vqa(
         session.commit()
 
     return {"answer": decoded, "query_id": file_id}
+

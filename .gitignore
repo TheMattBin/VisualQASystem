@@ -172,3 +172,35 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Database files
+*.db
+*.db3
+*.sqlite
+*.sqlite3
+*.sql
+*.bak
+*.tmp
+*.mdb
+*.accdb
+*.log
+*.pdb
+*.ldf
+*.sdf
+*.db-journal
+*.sqlite-journal
+*.sqlitedb
+*.db-shm
+*.db-wal
+
+# Image files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.webp
+*.ico
+images/

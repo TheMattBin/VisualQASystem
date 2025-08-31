@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState, ChangeEvent, FormEvent } from 'react';
 import styles from './UploadForm.module.css';
 
@@ -16,6 +15,7 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [question, setQuestion] = useState<string>('');
+  const [userId, setUserId] = useState<string>('testuser');
   const [error, setError] = useState<string>('');
   const [uploaded, setUploaded] = useState<boolean>(false);
 
@@ -34,15 +34,26 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
     setQuestion(e.target.value);
   };
 
+  const handleUserIdChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUserId(e.target.value);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!file || !question) {
-      setError('Please select a file and enter a question.');
+    if (!question) {
+      setError('Please enter a question.');
+      return;
+    }
+    if (!userId) {
+      setError('Please enter a user ID.');
       return;
     }
     const formData = new FormData();
-    formData.append('image', file);
+    if (file) {
+      formData.append('image', file);
+    }
     formData.append('question', question);
+    formData.append('user_id', userId);
     try {
       const response = await fetch('http://localhost:8000/vqa', {
         method: 'POST',
@@ -81,6 +92,16 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
           <img src={preview} alt="Preview" className={styles.previewImage} />
         </div>
       )}
+      <div>
+        <label className={styles.label}>User ID</label>
+        <input
+          type="text"
+          value={userId}
+          onChange={handleUserIdChange}
+          placeholder="Enter your user ID"
+          className={styles.input}
+        />
+      </div>
       <div>
         <label className={styles.label}>Your Question</label>
         <input
