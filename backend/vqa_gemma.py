@@ -5,8 +5,10 @@ from datetime import datetime
 
 from PIL import Image
 from dotenv import load_dotenv
+
 from pydantic import BaseModel
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from sqlalchemy import create_engine, Column, String, DateTime, Text
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -45,6 +47,15 @@ model = Gemma3ForConditionalGeneration.from_pretrained(model_id, device_map="aut
 processor = AutoProcessor.from_pretrained(model_id)
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class QARequest(BaseModel):
     question: str

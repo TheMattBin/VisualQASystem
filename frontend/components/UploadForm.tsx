@@ -40,6 +40,7 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setUploaded(false); // Reset uploaded state on new submission
     if (!question) {
       setError('Please enter a question.');
       return;
@@ -64,6 +65,10 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
         setUploaded(true);
         setError('');
         onResponse(data);
+        // Optionally clear form after successful upload
+        setFile(null);
+        setPreview(null);
+        setQuestion('');
       } else {
         const data = await response.json();
         setError(data.error || 'An error occurred during upload.');
