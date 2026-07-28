@@ -81,9 +81,11 @@ Automated checks run on every pull request and push to `main`. They are **requir
 | Workflow | What it does |
 |----------|--------------|
 | `CI` | Frontend lint + type-check + build; backend Ruff lint & format; tests (when added) |
-| `CodeQL` | Code security scanning (JS/TS + Python) on PRs/pushes and weekly |
+| `CodeQL` (Default Setup) | GitHub-managed code security scanning (Actions, JS/TS, Python) — configured in repo settings, runs on PRs/pushes and weekly |
 | `Dependency Review` | Blocks PRs that introduce critical/high-vulnerability dependencies |
 | `Dependabot` | Weekly dependency update PRs (npm, pip, GitHub Actions) |
+
+> CodeQL runs via GitHub **Default Setup** (Settings → Code security), not a workflow file. A custom CodeQL workflow would conflict with it ("advanced configurations cannot be processed when default setup is enabled").
 
 ### Adding tests
 
