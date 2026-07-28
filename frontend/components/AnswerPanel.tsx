@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { VqaResponse } from '../types/vqa';
 
 interface AnswerPanelProps {
-  response: any;
+  response: VqaResponse | string | null;
 }
 
 export default function AnswerPanel({ response }: AnswerPanelProps) {

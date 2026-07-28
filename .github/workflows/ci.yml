@@ -1,0 +1,108 @@
+# Quality gate: lint, type-check, build, and tests.
+# Backend CI intentionally runs static checks only (ruff) to avoid the multi-GB
+# torch install and model download that would otherwise require HUGGINGFACE_TOKEN.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend (lint, type-check, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+  backend:
+    name: Backend (ruff lint & format)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ruff
+        run: pip install --upgrade ruff
+
+      - name: Lint
+        run: ruff check backend/
+
+      - name: Format check
+        run: ruff format --check backend/
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Frontend: run `npm test` only when a test script is defined.
+      - name: Set up Node
+        if: ${{ hashFiles('frontend/package.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Frontend tests
+        working-directory: frontend
+        run: |
+          if jq -e '.scripts.test' package.json >/dev/null 2>&1; then
+            npm ci
+            npm test
+          else
+            echo "::notice::No 'test' script in frontend/package.json — skipping frontend tests."
+          fi
+
+      # Backend: run pytest only when test files exist.
+      - name: Set up Python
+        if: ${{ hashFiles('backend/test_*.py', 'backend/**/test_*.py') != '' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Backend tests
+        run: |
+          if compgen -G "backend/**/test_*.py" > /dev/null || compgen -G "backend/test_*.py" > /dev/null; then
+            pip install --upgrade pip pytest
+            pip install -r backend/requirements.txt
+            pytest backend/
+          else
+            echo "::notice::No backend test files (test_*.py) found — skipping backend tests."
+          fi

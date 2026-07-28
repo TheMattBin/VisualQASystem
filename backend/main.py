@@ -2,12 +2,13 @@
 import os
 import uuid
 from datetime import datetime
-from PIL import Image
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
 from pydantic import BaseModel
 
-from db import SessionLocal, QueryHistory
+from db import QueryHistory, SessionLocal
 from vqa_model import get_vqa_answer
 
 app = FastAPI()
@@ -20,32 +21,33 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 class QARequest(BaseModel):
     question: str
     user_id: str
 
+
 UPLOAD_DIR = "uploads"
+
 
 @app.post("/vqa")
 async def process_vqa(
-    image: UploadFile = File(None),
-    question: str = Form(...),
-    user_id: str = Form(...)
+    image: UploadFile = File(None), question: str = Form(...), user_id: str = Form(...)
 ):
     file_id = str(uuid.uuid4())
     save_path = None
 
     # If image is provided, handle and save it
     if image is not None:
-        if not image.content_type.startswith('image/'):
+        if not image.content_type.startswith("image/"):
             raise HTTPException(400, "Invalid image format")
         file_ext = os.path.splitext(image.filename)[1]
         save_path = f"{UPLOAD_DIR}/{file_id}{file_ext}"
         try:
             with Image.open(image.file) as img:
                 img.convert("RGB").save(save_path)
-        except IOError:
-            raise HTTPException(400, "Invalid image file")
+        except OSError:
+            raise HTTPException(400, "Invalid image file") from None
 
     # Build messages for model
     user_content = []
@@ -56,12 +58,9 @@ async def process_vqa(
     messages = [
         {
             "role": "system",
-            "content": [{"type": "text", "text": "You are a helpful assistant."}]
+            "content": [{"type": "text", "text": "You are a helpful assistant."}],
         },
-        {
-            "role": "user",
-            "content": user_content
-        }
+        {"role": "user", "content": user_content},
     ]
 
     decoded = get_vqa_answer(messages)
@@ -73,7 +72,7 @@ async def process_vqa(
         question=question,
         answer=decoded,
         timestamp=datetime.now(),
-        user_id=user_id
+        user_id=user_id,
     )
 
     with SessionLocal() as session:

@@ -1,0 +1,22 @@
+# Ruff configuration for the backend.
+# https://docs.astral.sh/ruff/configuration/
+target-version = "py311"
+line-length = 88
+extend-exclude = ["uploads", "*.db", "venv", ".venv"]
+
+[lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # pyflakes (unused imports, undefined names, etc.)
+  "I",   # isort (import ordering)
+  "UP",  # pyupgrade (modernize syntax)
+  "B",   # flake8-bugbear (likely bugs)
+  "SIM", # flake8-simplify (simpler code)
+]
+ignore = [
+  "B008",  # function call in default argument — required by FastAPI dependency injection (File/Form/Query).
+]
+
+[lint.per-file-ignores]
+# Model loader intentionally runs heavy init at import time.
+"vqa_model.py" = ["E402"]  # module-level import not at top of file (if needed in future)
