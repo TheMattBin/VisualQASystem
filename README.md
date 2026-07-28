@@ -74,6 +74,28 @@ erDiagram
 
 ---
 
+## CI & Security
+
+Automated checks run on every pull request and push to `main`. They are **required** — a PR cannot merge until they pass.
+
+| Workflow | What it does |
+|----------|--------------|
+| `CI` | Frontend lint + type-check + build; backend Ruff lint & format; tests (when added) |
+| `CodeQL` | Code security scanning (JS/TS + Python) on PRs/pushes and weekly |
+| `Dependency Review` | Blocks PRs that introduce critical/high-vulnerability dependencies |
+| `Dependabot` | Weekly dependency update PRs (npm, pip, GitHub Actions) |
+
+### Adding tests
+
+The `test` job in `CI` auto-activates with no workflow changes:
+
+- **Frontend:** add a `test` script to `frontend/package.json` (e.g. with Vitest/Jest) — the job runs `npm test` automatically.
+- **Backend:** add `test_*.py` files under `backend/` — the job runs `pytest backend/` automatically.
+
+> Backend CI runs **static checks only** (Ruff) to avoid the multi-GB `torch` install and model download. Keep test files free of imports that load the model at module top-level.
+
+---
+
 ## Tech Stack
 
 - **Frontend:** Next.js, React, Tailwind CSS, next-themes, react-markdown

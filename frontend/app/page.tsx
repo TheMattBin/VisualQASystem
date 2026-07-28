@@ -2,9 +2,10 @@
 import UploadForm from '../components/UploadForm';
 import AnswerPanel from '../components/AnswerPanel';
 import { useState } from 'react';
+import { VqaResponse } from '../types/vqa';
 
 export default function Home() {
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<VqaResponse | null>(null);
   return (
     <>
 

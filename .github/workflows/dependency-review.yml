@@ -1,0 +1,27 @@
+# Dependency review: blocks PRs that introduce dependencies with known
+# critical/high vulnerabilities.
+# https://github.com/actions/dependency-review-action
+name: Dependency Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          # Fail the PR when critical or high advisories are introduced.
+          fail-on-severity: high
+          # Comment on the PR with a summary of the changes.
+          comment-summary-in-pr: on-failure

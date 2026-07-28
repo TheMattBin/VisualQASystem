@@ -2,13 +2,10 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import styles from './UploadForm.module.css';
-
-interface BackendResponse {
-  [key: string]: any;
-}
+import { VqaResponse } from '../types/vqa';
 
 interface UploadFormProps {
-  onResponse: (response: BackendResponse | null) => void;
+  onResponse: (response: VqaResponse | null) => void;
 }
 
 export default function UploadForm({ onResponse }: UploadFormProps) {
@@ -74,7 +71,7 @@ export default function UploadForm({ onResponse }: UploadFormProps) {
         setError(data.error || 'An error occurred during upload.');
         onResponse(null);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred.');
       onResponse(null);
     }
