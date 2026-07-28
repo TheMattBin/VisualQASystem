@@ -18,6 +18,18 @@ updates:
     commit-message:
       prefix: "deps(frontend)"
       include: "scope"
+    # Ignore major bumps that are currently incompatible or ship vulnerable
+    # transitive deps. Revisit when the ecosystem catches up:
+    #  - typescript 7.x: typescript-eslint does not support TS 7 yet
+    #  - next 16.x: pulls sharp@0.34.x with high-severity libvips CVEs
+    #  - eslint-config-next 16.x: requires the above (next 16 / TS 7)
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
 
   # Backend pip dependencies
   - package-ecosystem: "pip"
